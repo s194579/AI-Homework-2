@@ -1,2 +1,2 @@
-public class Or {
+public class Or extends BinaryConnectiveProp{
 }
