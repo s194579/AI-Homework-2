@@ -47,23 +47,52 @@ public abstract class Proposition {
            }
 
            Proposition p1 = toProposition((String) prop.subSequence(startp1+1,endp1-1));
-           Proposition p2 = toProposition((String) prop.subSequence(startp2+1,endp2-1));
-           String m = prop.substring(endp1+1,startp2-1);
-           if(m.contains(Dict.AND)){
-               return new And(p1, p2);
-           } else if (m.contains(Dict.BIIMP)){
-               return  new BiImplication(p1,p2);
-           } else if (m.contains(Dict.IMP)){
-               return new Implication(p1,p2);
-           } else if (m.contains(Dict.OR)){
-               return new Or(p1,p2);
-           } else if (!b && prop.substring(0,startp1-1).contains(Dict.NOT)){
-               return new Not(p1);
-           }
 
+           Proposition p2 = null;
+           if(b) {
+               p2 = toProposition((String) prop.subSequence(startp2 + 1, endp2 - 1));
+           }
+           String m = prop.substring(endp1+1,startp2-1);
+           Proposition p;
+           if(m.contains(Dict.AND)){
+               p = new And(null,p1, p2);
+               p1.setParent(p);
+               p2.setParent(p);
+               return p;
+           } else if (m.contains(Dict.BIIMP)){
+
+               p = new BiImplication(null,p1,p2);
+               p1.setParent(p);
+               p2.setParent(p);
+               return p;
+
+           } else if (m.contains(Dict.IMP)){
+               p = new Implication(null,p1,p2);
+               p1.setParent(p);
+               p2.setParent(p);
+               return p;
+           } else if (m.contains(Dict.OR)){
+               p = new Or(null,p1,p2);
+               p1.setParent(p);
+               p2.setParent(p);
+               return p;
+           } else if (!b && prop.substring(0,startp1-1).contains(Dict.NOT)){
+               p =  new Not(null,p1);
+               p1.setParent(p);
+               return p;
+           }
+       }else{
+           Literal l = new Literal(null,null);
+           l.var = prop;
+           return l;
        }
        return null;
     }
+
+    private void setParent(Proposition p) {
+        parent = p;
+    }
+
 
     void toCNF(){
         Proposition currentProp = this.containsConnective(Dict.BIIMP);
