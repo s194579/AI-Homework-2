@@ -32,18 +32,29 @@ public abstract class Proposition {
                if (b && counter == 0){
                    if(findp1) {
                        endp1 = i;
+                       findp1 = false;
+                       b =false;
                    }else{
                        endp2 = i;
                        break;
                    }
-                   b =false;
                }
            }
 
            Proposition p1 = toProposition((String) prop.subSequence(startp1+1,endp1-1));
            Proposition p2 = toProposition((String) prop.subSequence(startp2+1,endp2-1));
            String m = prop.substring(endp1+1,startp2-1);
-           if(m.contains(""))
+           if(m.contains(Dict.AND)){
+               return new And(p1, p2);
+           } else if (m.contains(Dict.BIIMP)){
+               return  new BiImplication(p1,p2);
+           } else if (m.contains(Dict.IMP)){
+               return new Implication(p1,p2);
+           } else if (m.contains(Dict.OR)){
+               return new Or(p1,p2);
+           } else if (!b && prop.substring(0,startp1-1).contains(Dict.NOT)){
+               return new Not(p1);
+           }
 
        }
 
@@ -52,6 +63,8 @@ public abstract class Proposition {
 
 
     }
+
+
     void toCNF(){
         while (this.containsConnective(Dict.BIIMP)){
 
