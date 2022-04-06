@@ -68,8 +68,6 @@ public abstract class Proposition {
     void toCNF(){
         Proposition currentProp = this.containsConnective(Dict.BIIMP);
         while (currentProp != null){
-            currentProp = currentProp.transformBiimp(); //Expand Biimp to two implications
-
             currentProp = this.containsConnective(Dict.BIIMP);
         }
 
@@ -154,18 +152,47 @@ public abstract class Proposition {
         return false;
     }
 
+    void setParents(Proposition parent){
+        this.parent = parent;
+        if (this instanceof Literal){
+            return;
+        }
+
+        this.A.setParents(this);
+
+        if (this instanceof BinaryConnectiveProp){
+            ((BinaryConnectiveProp)this).B.setParents(this);
+        }
+    }
 
     Proposition transformBiimp(){
         if (!(this instanceof BiImplication)){
             System.out.println("ERROR: tried to transform BiImp, but was not BiImp");
-        } else {
-            BiImplication thisProp = ((BiImplication)this);
-            Proposition A = thisProp.A;
-            Proposition B = thisProp.B;
-            Proposition result = new And(new Implication(A,B),new Implication(B,A));
-            return result;
         }
-        return null;
+        BiImplication thisProp = ((BiImplication)this);
+        Proposition A = thisProp.A;
+        Proposition B = thisProp.B;
+        Proposition newA = new Implication(null,A,B);
+        Proposition newB = new Implication(null,B,A);
+        Proposition parent = new And(this.parent,A,B);
+        newA.parent = parent;
+        newB.parent = parent;
+        return parent;
+    }
+
+    Proposition transformImp(){
+        if (!(this instanceof Implication)){
+            System.out.println("ERROR: tried to transform Imp, but was not Imp");
+        }
+        Implication thisProp = ((Implication)this);
+        Proposition A = thisProp.A;
+        Proposition B = thisProp.B;
+        Proposition newA = new Not(null,A);
+        Proposition parent = new Or(this.parent,newA,B);
+        A.parent = newA;
+        newA.parent = parent;
+        B.parent = parent;
+        return parent;
     }
 
 
