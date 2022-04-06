@@ -1,2 +1,2 @@
-public class And {
+public class And extends BinaryConnectiveProp{
 }

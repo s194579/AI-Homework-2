@@ -1,2 +1,2 @@
-public class Not {
+public class Not extends Proposition{
 }

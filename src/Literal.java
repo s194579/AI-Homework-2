@@ -1,2 +1,2 @@
-public class Literal {
+public class Literal extends Proposition{
 }
