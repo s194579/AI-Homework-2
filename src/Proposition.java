@@ -2,13 +2,22 @@ public abstract class Proposition {
     Proposition A;
 
 
-    void toCNF(){
-        while (this.containsConnective(Dict.BIIMP)){
+    public Proposition(Proposition A){
+        this.A = A;
+    }
 
+    void toCNF(){
+        Proposition currentProp = this.containsConnective(Dict.BIIMP);
+        while (currentProp != null){
+            currentProp = currentProp.transformBiimp(); //Expand Biimp to two implications
+
+            currentProp = this.containsConnective(Dict.BIIMP);
         }
 
-        while (this.containsConnective(Dict.IMP)){
+        currentProp = this.containsConnective(Dict.IMP);
+        while (currentProp != null){
 
+            currentProp = this.containsConnective(Dict.IMP);
         }
 
         while (!this.isCNF()){
@@ -19,21 +28,32 @@ public abstract class Proposition {
 
     abstract String key();
 
-    boolean containsConnective(String key){
+    /**
+     * Returns the first proposition found, which contains the key, e.g. Dict.AND key
+     * If none is found, null is returned
+     * @param key
+     * @return
+     */
+    Proposition containsConnective(String key){
         if (this.key() == key){
-            return true;
+            return this;
         }
 
         if (this instanceof Literal){
-            return false;
+            return null;
         }
 
-        boolean aContains = this.A.containsConnective(key);
-        if (this instanceof BinaryConnectiveProp){
-            boolean bContains = ((BinaryConnectiveProp)this).B.containsConnective(key);
-            return aContains || bContains;
+        Proposition containingPropInABranch = this.A.containsConnective(key);
+        if (containingPropInABranch != null){
+            return containingPropInABranch;
         }
-        return aContains;
+        if (this instanceof BinaryConnectiveProp){
+            Proposition containingPropInBBranch = ((BinaryConnectiveProp)this).B.containsConnective(key);
+            if (containingPropInBBranch != null){
+                return containingPropInBBranch;
+            }
+        }
+        return null;
     }
 
     boolean isCNF(){
@@ -74,5 +94,20 @@ public abstract class Proposition {
         }
         return false;
     }
+
+
+    Proposition transformBiimp(){
+        if (!(this instanceof BiImplication)){
+            System.out.println("ERROR: tried to transform BiImp, but was not BiImp");
+        } else {
+            BiImplication thisProp = ((BiImplication)this);
+            Proposition A = thisProp.A;
+            Proposition B = thisProp.B;
+            Proposition result = new And(new Implication(A,B),new Implication(B,A));
+            return result;
+        }
+        return null;
+    }
+
 
 }
