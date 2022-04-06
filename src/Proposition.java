@@ -57,11 +57,7 @@ public abstract class Proposition {
            }
 
        }
-
-
-
-
-
+       return null;
     }
 
 
