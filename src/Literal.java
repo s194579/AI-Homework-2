@@ -1,3 +1,3 @@
 public class Literal extends Proposition{
-    String symbol;
+    String key() { return "";}
 }
