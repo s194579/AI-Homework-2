@@ -5,6 +5,7 @@ public class Application {
         Scanner scanner = new Scanner(System.in);
         //Read user input so it can be converted to a proposition
         String input = scanner.next();
+        //Convert to prop
 
     }
 }
