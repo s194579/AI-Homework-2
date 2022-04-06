@@ -1,6 +1,6 @@
 public class Literal extends Proposition{
+    String var;
 
-    //A should always be null in Literal
     public Literal(Proposition parent, Proposition A) {
         super(parent, A);
     }
