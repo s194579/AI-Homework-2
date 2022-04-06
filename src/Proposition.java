@@ -1,6 +1,11 @@
 public abstract class Proposition {
     Proposition A;
+    Proposition parent;
 
+    public Proposition(Proposition parent, Proposition A){
+        this.parent = parent;
+        this.A = A;
+    }
 
     public Proposition toProposition(String prop){
 
@@ -58,11 +63,6 @@ public abstract class Proposition {
 
        }
        return null;
-    }
-
-
-    public Proposition(Proposition A){
-        this.A = A;
     }
 
     void toCNF(){

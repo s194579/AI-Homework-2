@@ -1,6 +1,6 @@
 public class And extends BinaryConnectiveProp{
-    public And(Proposition A, Proposition B) {
-        super(A, B);
+    public And(Proposition parent, Proposition A, Proposition B) {
+        super(parent, A, B);
     }
 
     String key() { return Dict.AND;}
