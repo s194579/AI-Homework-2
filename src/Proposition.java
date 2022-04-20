@@ -7,91 +7,9 @@ public abstract class Proposition {
         this.A = A;
     }
 
-    public static Proposition toProposition(String prop){
-
-       if (prop.contains("(")){
-           boolean  findp1 = true;
-           boolean b = false;
-           int counter = 0;
-           int startp1 = 0;
-           int endp1 = 0;
-           int startp2 = 0;
-           int endp2 = 0;
-
-           String partTwo;
-           for (int i = 0; i < prop.length(); i++){
-               if(prop.charAt(i) == '('){
-                   if(!b){
-                       b = true;
-                       if(findp1) {
-                           startp1 = i;
-                       }else{
-                           startp2 = i;
-                       }
-                   }
-                   counter ++;
-               }
-               else if(prop.charAt(i) == ')'){
-                   counter --;
-               }
-               if (b && counter == 0){
-                   if(findp1) {
-                       endp1 = i;
-                       findp1 = false;
-                       b =false;
-                   }else{
-                       endp2 = i;
-                       break;
-                   }
-               }
-           }
-
-           Proposition p1 = toProposition((String) prop.subSequence(startp1+1,endp1-1));
-
-           Proposition p2 = null;
-           if(b) {
-               p2 = toProposition((String) prop.subSequence(startp2 + 1, endp2 - 1));
-           }
-           String m = prop.substring(endp1+1,startp2-1);
-           Proposition p;
-           if(m.contains(Dict.AND)){
-               p = new And(null,p1, p2);
-               p1.setParent(p);
-               p2.setParent(p);
-               return p;
-           } else if (m.contains(Dict.BIIMP)){
-
-               p = new BiImplication(null,p1,p2);
-               p1.setParent(p);
-               p2.setParent(p);
-               return p;
-
-           } else if (m.contains(Dict.IMP)){
-               p = new Implication(null,p1,p2);
-               p1.setParent(p);
-               p2.setParent(p);
-               return p;
-           } else if (m.contains(Dict.OR)){
-               p = new Or(null,p1,p2);
-               p1.setParent(p);
-               p2.setParent(p);
-               return p;
-           } else if (!b && prop.substring(0,startp1-1).contains(Dict.NOT)){
-               p =  new Not(null,p1);
-               p1.setParent(p);
-               return p;
-           }
-       }else{
-           Literal l = new Literal(null,null);
-           l.var = prop;
-           return l;
-       }
-       return null;
-    }
-
     public abstract String toString();
 
-    private void setParent(Proposition p) {
+    void setParent(Proposition p) {
         parent = p;
     }
 
