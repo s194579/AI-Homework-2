@@ -29,6 +29,12 @@ public class KnowledgeBase {
 
     public Proposition toSentence(List<Proposition> list){
         // Convert a knowledge base to a single sentence connected by AND
+
+        //And(null, )
+
+        for (int i = 0; i < list.size(); i++) {
+
+        }
         return null;
     }
 
@@ -42,10 +48,15 @@ public class KnowledgeBase {
         return KBlist;
     }
 
+    @Override
     public String toString(){
-        String result = "";
+        String result = "(";
         for (int i = 0; i < KBlist.size(); i++) {
-            KBlist.get(i).toString();
+            result += KBlist.get(i).toString();
+            if(i < KBlist.size()-1){
+                result += ", ";
+            }
+            result += ")";
         }
         return result;
     }
