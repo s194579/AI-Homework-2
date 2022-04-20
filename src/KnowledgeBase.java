@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class KnowledgeBase {
 
-    private List<Proposition> KBlist;
+    private List<Proposition> KBlist = new ArrayList<Proposition>();
 
     public void revise(Proposition phi){
         // This method takes a new proposition and does revision on the existing knowledge base

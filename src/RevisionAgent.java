@@ -22,7 +22,7 @@ public class RevisionAgent {
             } catch (Exception e){
                 System.out.println("Could not convert given input to a proposition. Input was:");
                 System.out.println(input);
-                break;
+                continue;
             }
 
             try {
@@ -31,7 +31,7 @@ public class RevisionAgent {
             } catch (Exception e){
                 System.out.println("Could not convert revise knowledge base with given proposition.");
                 System.out.println(input);
-                break;
+                continue;
             }
 
             System.out.println("Updated contents of the knowledge base:");
@@ -41,10 +41,26 @@ public class RevisionAgent {
 
 
     public static Proposition toProposition(String prop){
+        //Strip of whitespace
+        prop = prop.replaceAll("\\s", "");
+
+        //Perform conversion
+        Proposition proposition = toPropositionInner(prop);
+
+        //Set parents in whole tree
+        proposition.setParents(null);
+
+        return proposition;
+    }
+
+
+
+    private static Proposition toPropositionInner(String prop){
+        Proposition p1, p2;
 
         if (prop.contains("(")){
             boolean  findp1 = true;
-            boolean b = false;
+            boolean b = false; //indicates if top connective is binary (As opposed to unary)
             int counter = 0;
             int startp1 = 0;
             int endp1 = 0;
@@ -79,46 +95,66 @@ public class RevisionAgent {
                 }
             }
 
-            Proposition p1 = toProposition((String) prop.subSequence(startp1+1,endp1-1));
+            p1 = toPropositionInner((String) prop.subSequence(startp1+1,endp1));
 
-            Proposition p2 = null;
+            p2 = null;
             if(b) {
-                p2 = toProposition((String) prop.subSequence(startp2 + 1, endp2 - 1));
+                p2 = toPropositionInner((String) prop.subSequence(startp2 + 1, endp2 - 1));
             }
+
             String m = prop.substring(endp1+1,startp2-1);
-            Proposition p;
+            Proposition p = null;
             if(m.contains(Dict.AND)){
                 p = new And(null,p1, p2);
-                p1.setParent(p);
-                p2.setParent(p);
-                return p;
             } else if (m.contains(Dict.BIIMP)){
-
                 p = new BiImplication(null,p1,p2);
-                p1.setParent(p);
-                p2.setParent(p);
-                return p;
-
             } else if (m.contains(Dict.IMP)){
                 p = new Implication(null,p1,p2);
-                p1.setParent(p);
-                p2.setParent(p);
-                return p;
             } else if (m.contains(Dict.OR)){
                 p = new Or(null,p1,p2);
-                p1.setParent(p);
-                p2.setParent(p);
-                return p;
             } else if (!b && prop.substring(0,startp1-1).contains(Dict.NOT)){
                 p =  new Not(null,p1);
-                p1.setParent(p);
-                return p;
             }
-        }else{
-            Literal l = new Literal(null,null);
-            l.var = prop;
+            return p;
+        }
+        //If there were not parentheses
+        return noParenthesesToProp(prop);
+    }
+
+    private static Proposition noParenthesesToProp(String prop){
+        //Prop has no parantheses, e.g. "A&B", "C", "A&B => C|D"
+        //Split on highest level operator: hierarchy is BIIMP, IMP, OR, AND, NOT
+        String[] args;
+        Proposition p1, p2;
+        if (prop.contains(Dict.BIIMP)){
+            args = prop.split(Dict.BIIMP,2);
+            p1 = noParenthesesToProp(args[0]);
+            p2 = noParenthesesToProp(args[1]);
+            return new BiImplication(null, p1, p2);
+        } else if (prop.contains(Dict.IMP)){
+            args = prop.split(Dict.IMP,2);
+            p1 = noParenthesesToProp(args[0]);
+            p2 = noParenthesesToProp(args[1]);
+            return new Implication(null, p1, p2);
+        } else if (prop.contains(Dict.OR)){
+            args = prop.split(Dict.OR,2);
+            p1 = noParenthesesToProp(args[0]);
+            p2 = noParenthesesToProp(args[1]);
+            return new Or(null, p1, p2);
+        } else if (prop.contains(Dict.AND)){
+            args = prop.split(Dict.AND,2);
+            p1 = noParenthesesToProp(args[0]);
+            p2 = noParenthesesToProp(args[1]);
+            return new And(null, p1, p2);
+        } else if (prop.contains(Dict.NOT)){
+            //Must only contain NOT LITERAL
+            String var = prop.replace(Dict.NOT,"");
+            p1 = new Literal(null,var);
+            return new Not(null,p1);
+        } else {
+            //Must be literal only
+            Literal l = new Literal(null,prop);
             return l;
         }
-        return null;
     }
 }
