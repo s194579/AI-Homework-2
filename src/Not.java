@@ -4,5 +4,10 @@ public class Not extends Proposition{
         super(parent, A);
     }
 
+    @Override
+    public String toString() {
+        return "(" + key() + this.A.toString() + ")";
+    }
+
     String key() { return Dict.NOT;}
 }
