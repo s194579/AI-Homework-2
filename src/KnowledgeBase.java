@@ -24,7 +24,7 @@ public class KnowledgeBase {
 
     public void revise(Proposition phi){
         // This method takes a new proposition and does revision on the existing knowledge base
-        contraction(phi);
+        contraction(new Not(null,phi));
         addProposition(phi);
 
     }
@@ -38,21 +38,25 @@ public class KnowledgeBase {
         // Return a version of the knowledge base which is in CNF
         List<Proposition> KBclone = new ArrayList<Proposition>(KBlist);
 
-        Proposition sentence = toSentence(KBclone);
+        Proposition sentence = toProposition(KBclone);
         //sentence.toCNF(); //The call is likely different
 
         return sentence;
     }
 
-    public Proposition toSentence(List<Proposition> list){
+    public Proposition toProposition(List<Proposition> list){
         // Convert a knowledge base to a single sentence connected by AND
-
-        //And(null, )
-
-        for (int i = 0; i < list.size(); i++) {
-
+        if(list.size() == 1){
+            return list.get(0);
         }
-        return null;
+
+        Proposition result = new And(null,list.get(0),list.get(1));
+
+        for (int i = 2; i < list.size(); i++) {
+            Proposition nextLayer = new And(null, result, list.get(i));
+            result = nextLayer;
+        }
+        return result;
     }
 
     public void addProposition(Proposition phi){
