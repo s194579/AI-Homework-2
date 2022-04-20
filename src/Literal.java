@@ -5,5 +5,10 @@ public class Literal extends Proposition{
         super(parent, A);
     }
 
+    @Override
+    public String toString() {
+        return var;
+    }
+
     String key() { return "";}
 }

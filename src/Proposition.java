@@ -7,7 +7,7 @@ public abstract class Proposition {
         this.A = A;
     }
 
-    public Proposition toProposition(String prop){
+    public static Proposition toProposition(String prop){
 
        if (prop.contains("(")){
            boolean  findp1 = true;
@@ -88,6 +88,8 @@ public abstract class Proposition {
        }
        return null;
     }
+
+    public abstract String toString();
 
     private void setParent(Proposition p) {
         parent = p;
