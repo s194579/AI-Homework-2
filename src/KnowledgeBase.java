@@ -36,7 +36,7 @@ public class KnowledgeBase {
         Proposition compProp = this.toSingleProposition(cloneKB);
 
         //Check for unsatisfiability
-        boolean satisfiable = SAT.satisfiable(compProp);
+        boolean satisfiable = SAT.isSatisfiableDPLL(compProp);
 
         return !satisfiable;
     }
