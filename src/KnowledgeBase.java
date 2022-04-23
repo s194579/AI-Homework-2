@@ -63,4 +63,13 @@ public class KnowledgeBase {
         return sb.toString();
     }
 
+    public String toCNFString(){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < KBlist.size(); i++) {
+            sb.append(KBlist.get(i).toCNF().toString());
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
 }
