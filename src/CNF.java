@@ -4,8 +4,9 @@ public class CNF {
     public Proposition toCNF(Proposition proposition){
         Proposition proposition1 = eliminate(proposition);
         Proposition proposition2 = demorgan(proposition1);
+        Proposition proposition3 = distribute(proposition2);
 
-        return null;
+        return proposition3;
     }
 
     private Proposition eliminate(Proposition proposition){
@@ -76,7 +77,7 @@ public class CNF {
             return proposition5;
         }else if (proposition instanceof Not && proposition.A instanceof Or){
             Proposition proposition1 = new Not(null, proposition.A.A);
-            Proposition proposition2 = new Not(null, ((And) proposition.A).B);
+            Proposition proposition2 = new Not(null, ((Or) proposition.A).B);
             Proposition proposition3 = demorgan(proposition1);
             Proposition proposition4 = demorgan(proposition2);
             Proposition proposition5 = new And(null, proposition3, proposition4);
@@ -92,7 +93,7 @@ public class CNF {
             return proposition3;
         }else if (proposition instanceof Or){
             Proposition proposition1 = demorgan(proposition.A);
-            Proposition proposition2 = demorgan(((And) proposition).B);
+            Proposition proposition2 = demorgan(((Or) proposition).B);
             Proposition proposition3 = new Or(null,proposition1,proposition2);
             proposition1.parent = proposition3;
             proposition2.parent = proposition3;
@@ -100,7 +101,9 @@ public class CNF {
         }else if (proposition instanceof Not && proposition.A instanceof Not){
             Proposition proposition1 = demorgan(proposition.A.A);
             return  proposition1;
-        }else  if (proposition instanceof Literal){
+        }else  if (proposition instanceof Not && proposition.A instanceof Literal){
+            return proposition;
+        } else  if (proposition instanceof Literal){
             return proposition;
         }
         return null;
@@ -119,7 +122,9 @@ public class CNF {
             Proposition proposition2 = distribute(((Or) proposition).B);
             Proposition proposition3 = distribute(proposition1,proposition2);
             return  proposition3;
-        }else if (proposition instanceof Literal){
+        } else if (proposition instanceof Not && proposition.A instanceof Literal){
+            return proposition;
+        } else if (proposition instanceof Literal){
             return proposition;
         }
         return null;
