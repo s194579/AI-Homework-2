@@ -5,7 +5,9 @@ public abstract class Proposition {
     public Proposition(Proposition parent, Proposition A){
         this.parent = parent;
         this.A = A;
-        this.A.setParent(this);
+        if (this.A != null){
+            this.A.setParent(this);
+        }
     }
 
     public abstract String toString();

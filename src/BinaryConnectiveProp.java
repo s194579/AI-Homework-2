@@ -4,7 +4,9 @@ public abstract class BinaryConnectiveProp extends Proposition{
     public BinaryConnectiveProp(Proposition parent, Proposition A, Proposition B){
         super(parent, A);
         this.B = B;
-        this.B.setParent(B);
+        if (this.B != null){
+            this.B.setParent(B);
+        }
     }
 
     public String toString() {
