@@ -1,18 +1,45 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SAT {
+    static List<Proposition> clauses;
+    static HashMap<String,Unit> symbols;
 
     public static boolean isSatisfiableDPLL(Proposition prop){
-        HashMap<String,Unit> symbols = getSymbolsHashmap(prop);
+        // Get symbols
+        symbols = getSymbolsHashmap(prop);
         Proposition cnfProp = prop.toCNF();
-        List<Proposition> clauses = getClausesFromCNF(cnfProp);
+
+        // Get clauses
+        clauses = getClausesFromCNF(cnfProp);
+
+        //Create empty model (no values of any symbol is known)
+        Model model = new Model(symbols);
+
+        // Determine satisfiability recursively using DPLL
+        boolean satisfiable = DPLL(model);
         return false;
     }
 
-    public static boolean DPLL(List<Proposition> clauses, List<Unit> symbols){
-        return false;
+    public static boolean DPLL(Model model){
+        // If every clause is true - return true
+
+        // If any clause is false - return false
+
+        // Find eventual pure symbols and simplify
+
+        // Find eventual unit clauses and simplify
+
+        // Assume values of first symbol and recurse
+        String unknownSymbol = model.getFirstUnknownSymbol();
+        Model model1 = model.getClone();
+        model1.modelValues.put(unknownSymbol, Model.value.F);
+        Model model2 = model.getClone();
+        model1.modelValues.put(unknownSymbol, Model.value.T);
+
+        return DPLL(model1) || DPLL(model2);
     }
 
     private static HashMap<String,Unit> getSymbolsHashmap(Proposition prop){
@@ -54,14 +81,9 @@ public class SAT {
         return list;
     }
 
-
-
-    private static class Unit{
+    static class Unit{
         String symbol;
         boolean isNegated;
-        boolean valueIsKnown;
-        boolean value;
-
 
         public Unit(String symbol, boolean isNegated) {
             this.symbol = symbol;
