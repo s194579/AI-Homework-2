@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class KnowledgeBase {
 
@@ -16,19 +15,43 @@ public class KnowledgeBase {
     public void contraction(Proposition phi){
         // This method takes a new proposition and does contraction on the existing knowledge base
 
+        //Check if current beliefs entail the given information (If they don't, we can ignore)
+        if (entails(phi)){
+
+        }
+
+    }
+
+    //KB entails phi   iff   "KB & !phi" is unsatisfiable (i.e. never true)
+    private boolean entails(Proposition phi){
+
+        //Negate phi
+        Proposition nphi = phi instanceof Not ? phi.A : new Not(null,phi);
+
+        //Clone KBlist and add nphi
+        ArrayList<Proposition> cloneKB = new ArrayList<>(KBlist);
+        cloneKB.add(nphi);
+
+        //Make composite proposition
+        Proposition compProp = this.toSingleProposition(cloneKB);
+
+        //Check for unsatisfiability
+        boolean satisfiable = SAT.satisfiable(compProp);
+
+        return !satisfiable;
     }
 
     public Proposition toCNF(){
         // Return a version of the knowledge base which is in CNF
         List<Proposition> KBclone = new ArrayList<Proposition>(KBlist);
 
-        Proposition sentence = toProposition(KBclone);
+        Proposition sentence = toSingleProposition(KBclone);
         //sentence.toCNF(); //The call is likely different
 
         return sentence;
     }
 
-    public Proposition toProposition(List<Proposition> list){
+    public Proposition toSingleProposition(List<Proposition> list){
         // Convert a knowledge base to a single sentence connected by AND
         if(list.size() == 1){
             return list.get(0);
