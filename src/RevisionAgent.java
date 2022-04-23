@@ -7,10 +7,11 @@ public class RevisionAgent {
 
     public void start(){
         System.out.println("Welcome. Write \"exit\" to stop at any point.");
+        System.out.println("Write \"cnf\" to show the CNF representation of the knowledge base.");
         String input;
         boolean exit = false, showCNF = false;
         while (!exit){
-            System.out.println("Input your proposition:");
+            System.out.println("Input your proposition or command:");
             input = scanner.nextLine();
             exit = input.equalsIgnoreCase("exit");
             if (exit) break;
