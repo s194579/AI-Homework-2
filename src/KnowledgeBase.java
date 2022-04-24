@@ -16,23 +16,70 @@ public class KnowledgeBase {
         // This method takes a new proposition and does contraction on the existing knowledge base
 
         //Check if current beliefs entail the given information (If they don't, we can ignore)
-        if (entails(phi)){
-            int i = 0;
+        if (!entails(KBlist,phi)){
+            return;
+        }
+
+        int[] indices = getIndicesOfPropsToDelete(phi);
+
+        removeElementsFromList(KBlist, indices);
+
+    }
+
+    // Iterate through all combinations of 1,2,...,n propositions to delete and find first non-entailing
+    int[] getIndicesOfPropsToDelete(Proposition phi){
+        for (int i = 1; i < KBlist.size()+1; i++) {
+            int[] indices = getFirstNonEntailingIndices(i, phi);
+            if (indices != null){
+                return indices;
+            }
+        }
+        return null;
+    }
+
+    int[] getFirstNonEntailingIndices(int numOfPropsToDelete, Proposition phi){
+        int n = KBlist.size();
+        List<int[]> indicesToTry = CombinatoricsUtil.generateCombinations_n_choose_r(n,numOfPropsToDelete);
+        for (int[] indices: indicesToTry) {
+            //Create clone of KB
+            List<Proposition> testKbList = new ArrayList<>(KBlist);
+
+            //Remove props
+            removeElementsFromList(testKbList,indices);
+
+            //Check entailment
+            boolean entails = entails(testKbList, phi);
+
+            if (!entails){
+                return indices;
+            }
+        }
+        return null;
+    }
+
+    void removeElementsFromList(List<Proposition> list, int[] indicesToDelete){
+        //Mark elements for removal
+        for (int i:indicesToDelete) {
+            list.set(i,null);
+        }
+
+        //Remove marked elements
+        while (list.remove(null)) {
         }
     }
 
     //KB entails phi   iff   "KB & !phi" is unsatisfiable (i.e. never true)
-    private boolean entails(Proposition phi){
+    private static boolean entails(List<Proposition> KB, Proposition phi){
 
         //Negate phi
         Proposition nphi = phi instanceof Not ? phi.A : new Not(null,phi);
 
         //Clone KBlist and add nphi
-        ArrayList<Proposition> cloneKB = new ArrayList<>(KBlist); // TODO consider deep clone
+        ArrayList<Proposition> cloneKB = new ArrayList<>(KB); // TODO consider deep clone
         cloneKB.add(nphi);
 
         //Make composite proposition
-        Proposition compProp = this.toSingleProposition(cloneKB);
+        Proposition compProp = toSingleProposition(cloneKB);
 
         //Check for unsatisfiability
         boolean satisfiable = SAT.isSatisfiableDPLL(compProp);
@@ -40,17 +87,7 @@ public class KnowledgeBase {
         return !satisfiable;
     }
 
-    public Proposition toCNF(){
-        // Return a version of the knowledge base which is in CNF
-        List<Proposition> KBclone = new ArrayList<Proposition>(KBlist);
-
-        Proposition sentence = toSingleProposition(KBclone);
-        //sentence.toCNF(); //The call is likely different
-
-        return sentence;
-    }
-
-    public Proposition toSingleProposition(List<Proposition> list){
+    public static Proposition toSingleProposition(List<Proposition> list){
         // Convert a knowledge base to a single sentence connected by AND
         if(list.size() == 1){
             return list.get(0);
@@ -69,10 +106,6 @@ public class KnowledgeBase {
         if(!KBlist.contains(phi)){
             KBlist.add(phi);
         }
-    }
-
-    public List<Proposition> getPropositions(){
-        return KBlist;
     }
 
     @Override

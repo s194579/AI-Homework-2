@@ -38,7 +38,7 @@ public class RevisionAgent {
                 System.out.println("Revising knowledge base with recieved proposition");
                 kb.revise(proposition);
             } catch (Exception e){
-                System.out.println("Could not convert revise knowledge base with given proposition.");
+                System.out.println("Could not revise knowledge base with given proposition.");
                 System.out.println(input);
                 continue;
             }

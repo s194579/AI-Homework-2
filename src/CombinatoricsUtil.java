@@ -1,15 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-
-public class Application {
-    public static void main(String[] args) {
-        RevisionAgent agent = new RevisionAgent();
-        agent.start();
-    }
-
-    public static List<int[]> generate(int n, int r) {
+public class CombinatoricsUtil {
+    public static List<int[]> generateCombinations_n_choose_r(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
         int[] combination = new int[r];
 
@@ -31,7 +24,6 @@ public class Application {
                 combination[i] = combination[i - 1] + 1;
             }
         }
-
         return combinations;
     }
 }
