@@ -17,9 +17,8 @@ public class KnowledgeBase {
 
         //Check if current beliefs entail the given information (If they don't, we can ignore)
         if (entails(phi)){
-
+            int i = 0;
         }
-
     }
 
     //KB entails phi   iff   "KB & !phi" is unsatisfiable (i.e. never true)
@@ -29,7 +28,7 @@ public class KnowledgeBase {
         Proposition nphi = phi instanceof Not ? phi.A : new Not(null,phi);
 
         //Clone KBlist and add nphi
-        ArrayList<Proposition> cloneKB = new ArrayList<>(KBlist);
+        ArrayList<Proposition> cloneKB = new ArrayList<>(KBlist); // TODO consider deep clone
         cloneKB.add(nphi);
 
         //Make composite proposition

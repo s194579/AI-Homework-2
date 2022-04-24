@@ -35,4 +35,6 @@ public abstract class Proposition {
             ((BinaryConnectiveProp)this).B.setParents(this);
         }
     }
+
+    abstract Model.value truthValue(Model model);
 }

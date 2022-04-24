@@ -20,16 +20,28 @@ public class SAT {
 
         // Determine satisfiability recursively using DPLL
         boolean satisfiable = DPLL(model);
-        return false;
+        return satisfiable;
     }
 
     public static boolean DPLL(Model model){
+        //Terminate if we can
+        boolean allTrueSoFar = true;
+        for (Proposition clause:clauses) {
+            Model.value value = clause.truthValue(model);
+            // If any clause is false - return false
+            if (value == Model.value.F){
+                return false;
+            } else if (value == Model.value.unknown){
+                allTrueSoFar = false;
+            }
+        }
         // If every clause is true - return true
+        if (allTrueSoFar){
+            return true;
+        }
 
-        // If any clause is false - return false
-
+        //TODO add these optimizations
         // Find eventual pure symbols and simplify
-
         // Find eventual unit clauses and simplify
 
         // Assume values of first symbol and recurse
@@ -37,7 +49,7 @@ public class SAT {
         Model model1 = model.getClone();
         model1.modelValues.put(unknownSymbol, Model.value.F);
         Model model2 = model.getClone();
-        model1.modelValues.put(unknownSymbol, Model.value.T);
+        model2.modelValues.put(unknownSymbol, Model.value.T);
 
         return DPLL(model1) || DPLL(model2);
     }
@@ -72,10 +84,11 @@ public class SAT {
 
     private static List<Proposition> getClausesFromCNF(Proposition prop){
         List<Proposition> list = new ArrayList<>();
-        Proposition p = prop;
         if (prop instanceof And){
             list.addAll(getClausesFromCNF(((And) prop).B));
             list.addAll(getClausesFromCNF(prop.A));
+        } else {
+            list.add(prop);
         }
 
         return list;

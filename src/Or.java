@@ -6,4 +6,16 @@ public class Or extends BinaryConnectiveProp{
     }
 
     String key() { return Dict.OR;}
+
+    @Override
+    Model.value truthValue(Model model) {
+        Model.value valA = A.truthValue(model);
+        Model.value valB = B.truthValue(model);
+        if (valA == Model.value.unknown || valB == Model.value.unknown){
+            return Model.value.unknown;
+        } else if (valA == Model.value.T || valB == Model.value.T){
+            return Model.value.T;
+        }
+        return Model.value.F;
+    }
 }

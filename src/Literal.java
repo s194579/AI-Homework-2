@@ -17,4 +17,11 @@ public class Literal extends Proposition{
     }
 
     String key() { return "";}
+
+    @Override
+    Model.value truthValue(Model model) {
+        return model.modelValues.get(var);
+    }
+
+
 }

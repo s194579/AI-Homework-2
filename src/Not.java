@@ -10,4 +10,18 @@ public class Not extends Proposition{
     }
 
     String key() { return Dict.NOT;}
+
+    @Override
+    Model.value truthValue(Model model) {
+        Model.value val = A.truthValue(model);
+        switch (val){
+            case T:
+                return Model.value.F;
+            case F:
+                return Model.value.T;
+            case unknown:
+                return Model.value.unknown;
+        }
+        return null;
+    }
 }
