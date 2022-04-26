@@ -8,11 +8,11 @@ public class SAT {
 
     public static boolean isSatisfiableDPLL(Proposition prop){
         // Get symbols
-        symbols = getSymbols(prop);
+        symbols = PropUtil.getSymbols(prop);
         Proposition cnfProp = prop.toCNF();
 
         // Get clauses
-        clauses = getClausesFromCNF(cnfProp);
+        clauses = PropUtil.getClausesFromCNF(cnfProp);
 
         //Create empty model (no values of any symbol is known)
         Model model = new Model(symbols);
@@ -62,7 +62,7 @@ public class SAT {
                 continue;
             }
 
-            List<Proposition> literals = clauseToPropList(clause);
+            List<Proposition> literals = PropUtil.clauseToPropList(clause);
             for (Proposition literal: literals) {
                 if (literal instanceof Literal){ //If it is not a Not(Literal)
                     // Check if already found in negated form
@@ -99,7 +99,7 @@ public class SAT {
                 continue;
             }
 
-            List<Proposition> literals = clauseToPropList(clause);
+            List<Proposition> literals = PropUtil.clauseToPropList(clause);
             for (Proposition literal: literals) {
                 int numOfUnknownLiterals = 0;
                 String latestUnkownSymbol = null;
@@ -129,46 +129,5 @@ public class SAT {
         }
     }
 
-    private static List<String> getSymbols(Proposition prop){
-        List<String> list = new ArrayList<>();
-        if (prop instanceof Literal){
-            String symbol = ((Literal) prop).var;
-            list.add(symbol);
-        } else if (prop instanceof Not && prop.A instanceof Literal){
-            String symbol = ((Literal) (prop.A)).var;
-            list.add(symbol);
-        } else {
-            list.addAll(getSymbols(prop.A));
-            if (prop instanceof BinaryConnectiveProp){
-                list.addAll(getSymbols(((BinaryConnectiveProp) prop).B));
-            }
-        }
-        return list;
-    }
 
-    private static List<Proposition> getClausesFromCNF(Proposition prop){
-        List<Proposition> list = new ArrayList<>();
-        if (prop instanceof And){
-            list.addAll(getClausesFromCNF(((And) prop).B));
-            list.addAll(getClausesFromCNF(prop.A));
-        } else {
-            list.add(prop);
-        }
-
-        return list;
-    }
-
-    private static List<Proposition> clauseToPropList(Proposition prop){
-        List<Proposition> props = new ArrayList<>();
-        if (prop instanceof Literal || prop instanceof Not && prop.A instanceof Literal){
-            props.add(prop);
-            return props;
-        }
-
-        props.addAll(clauseToPropList(prop.A));
-        if (prop instanceof Or){
-            props.addAll(clauseToPropList(((Or)prop).B));
-        }
-        return props;
-    }
 }

@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class CombinatoricsUtil {
+public class Util {
 
     /**
      DISCLAIMER:
@@ -32,5 +33,31 @@ public class CombinatoricsUtil {
             }
         }
         return combinations;
+    }
+
+    //Sorts based on sum of indices, e.g. [1,5] has priority 6 and [0,4] has priority 4
+    public static void sortIndicesOnPriority(List<int[]> indices){
+        Util cu = new Util();
+        indices.sort(
+                Comparator.comparingInt(cu::sum));
+    }
+
+    private int sum(int[] array){
+        int sum = 0;
+        for (int i:array) {
+            sum+=i;
+        }
+        return sum;
+    }
+
+    public static void removeElementsFromList(List<Proposition> list, int[] indicesToDelete){
+        //Mark elements for removal
+        for (int i:indicesToDelete) {
+            list.set(i,null);
+        }
+
+        //Remove marked elements
+        while (list.remove(null)) {
+        }
     }
 }
