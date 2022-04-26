@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CombinatoricsUtil {
+
+    /**
+     DISCLAIMER: THIS CODE WAS BORROWED FROM
+     */
     public static List<int[]> generateCombinations_n_choose_r(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
         int[] combination = new int[r];

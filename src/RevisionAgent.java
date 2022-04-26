@@ -1,8 +1,7 @@
-import java.util.Locale;
 import java.util.Scanner;
 
 public class RevisionAgent {
-    KnowledgeBase kb = new KnowledgeBase();
+    BeliefBase kb = new BeliefBase();
     Scanner scanner = new Scanner(System.in);
 
     public void start(){

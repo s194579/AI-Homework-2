@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class KnowledgeBase {
+public class BeliefBase {
 
     private List<Proposition> KBlist = new ArrayList<Proposition>();
 
@@ -37,9 +38,24 @@ public class KnowledgeBase {
         return null;
     }
 
+    //Sorts based on sum of indices, e.g. [1,5] has priority 6 and [0,4] has priority 4
+    void sortIndicesOnPriority(List<int[]> indices){
+        indices.sort(
+                Comparator.comparingInt(this::sum));
+    }
+
+    private int sum(int[] array){
+        int sum = 0;
+        for (int i:array) {
+            sum+=i;
+        }
+        return sum;
+    }
+
     int[] getFirstNonEntailingIndices(int numOfPropsToDelete, Proposition phi){
         int n = KBlist.size();
         List<int[]> indicesToTry = CombinatoricsUtil.generateCombinations_n_choose_r(n,numOfPropsToDelete);
+        sortIndicesOnPriority(indicesToTry);
         for (int[] indices: indicesToTry) {
             //Create clone of KB
             List<Proposition> testKbList = new ArrayList<>(KBlist);
