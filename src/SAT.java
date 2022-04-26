@@ -1,15 +1,14 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SAT {
     static List<Proposition> clauses;
-    static HashMap<String,Unit> symbols;
+    static List<String> symbols;
 
     public static boolean isSatisfiableDPLL(Proposition prop){
         // Get symbols
-        symbols = getSymbolsHashmap(prop);
+        symbols = getSymbols(prop);
         Proposition cnfProp = prop.toCNF();
 
         // Get clauses
@@ -40,9 +39,8 @@ public class SAT {
             return true;
         }
 
-        //TODO add these optimizations
-        // Find eventual pure symbols and simplify
-        // Find eventual unit clauses and simplify
+        applyPureSymbolsSimplification(model);
+        applyUnitClauseSimplification(model);
 
         // Assume values of first symbol and recurse
         String unknownSymbol = model.getFirstUnknownSymbol();
@@ -54,25 +52,91 @@ public class SAT {
         return DPLL(model1) || DPLL(model2);
     }
 
-    private static HashMap<String,Unit> getSymbolsHashmap(Proposition prop){
-        List<Unit> units = getSymbols(prop);
-        HashMap<String,Unit> map = new HashMap<>();
-        for (Unit unit: units) {
-            map.put(unit.symbol,unit);
+    private static void applyPureSymbolsSimplification(Model model){
+        // Find eventual pure symbols and simplify
+        // If symbol only has positive sign in unresolved clauses then it is pure
+        HashMap<String,Boolean> pureSymbolMap = new HashMap<String, Boolean>();
+        for (Proposition clause: clauses) {
+            boolean isResolved = Model.value.T==clause.truthValue(model);
+            if (isResolved){ //Ignore clauses that are already resolved
+                continue;
+            }
+
+            List<Proposition> literals = clauseToPropList(clause);
+            for (Proposition literal: literals) {
+                if (literal instanceof Literal){ //If it is not a Not(Literal)
+                    // Check if already found in negated form
+                    String symbol = ((Literal) literal).var;
+                    Boolean val = pureSymbolMap.get(symbol);
+                    if (val == null){
+                        pureSymbolMap.put(symbol,true);
+                    }
+                } else if (literal instanceof Not && literal.A instanceof Literal){
+                    String symbol = ((Literal) literal.A).var;
+                    Boolean val = pureSymbolMap.get(symbol);
+                    if (val == null || val == true){
+                        pureSymbolMap.put(symbol,false);
+                    }
+                }
+            }
         }
-        return map;
+
+        // Find the pure symbols and assign value to true
+        for (String symbol: pureSymbolMap.keySet()) {
+            Boolean val = pureSymbolMap.get(symbol);
+            if (val == true){
+                model.modelValues.put(symbol, Model.value.T);
+            }
+        }
     }
 
-    private static List<Unit> getSymbols(Proposition prop){
-        List<Unit> list = new ArrayList<>();
+    private static void applyUnitClauseSimplification(Model model){
+        // Find eventual unit clauses and simplify
+        // If there is only one symbol in clause with value "unknown" then it is unit clause
+        for (Proposition clause: clauses) {
+            boolean isResolved = Model.value.T==clause.truthValue(model);
+            if (isResolved){ //Ignore clauses that are already resolved
+                continue;
+            }
+
+            List<Proposition> literals = clauseToPropList(clause);
+            for (Proposition literal: literals) {
+                int numOfUnknownLiterals = 0;
+                String latestUnkownSymbol = null;
+                Model.value latestUnkownSymbolValue = Model.value.unknown;
+                if (literal instanceof Literal){ //If it is not a Not(Literal)
+                    // Check if already found in negated form
+                    String symbol = ((Literal) literal).var;
+                    if (model.modelValues.get(symbol)== Model.value.unknown){
+                        numOfUnknownLiterals++;
+                        latestUnkownSymbol = symbol;
+                        latestUnkownSymbolValue = Model.value.T;
+                    }
+                } else if (literal instanceof Not && literal.A instanceof Literal){
+                    String symbol = ((Literal) literal.A).var;
+                    if (model.modelValues.get(symbol)== Model.value.unknown){
+                        numOfUnknownLiterals++;
+                        latestUnkownSymbol = symbol;
+                        latestUnkownSymbolValue = Model.value.F;
+                    }
+                }
+
+                // If unit clause then assign approriate value
+                if (numOfUnknownLiterals == 1){
+                    model.modelValues.put(latestUnkownSymbol,latestUnkownSymbolValue);
+                }
+            }
+        }
+    }
+
+    private static List<String> getSymbols(Proposition prop){
+        List<String> list = new ArrayList<>();
         if (prop instanceof Literal){
             String symbol = ((Literal) prop).var;
-            Unit unit = new Unit(symbol,false);
-            list.add(unit);
+            list.add(symbol);
         } else if (prop instanceof Not && prop.A instanceof Literal){
             String symbol = ((Literal) (prop.A)).var;
-            Unit unit = new Unit(symbol,true);
-            list.add(unit);
+            list.add(symbol);
         } else {
             list.addAll(getSymbols(prop.A));
             if (prop instanceof BinaryConnectiveProp){
@@ -94,17 +158,17 @@ public class SAT {
         return list;
     }
 
-    static class Unit{
-        String symbol;
-        boolean isNegated;
-
-        public Unit(String symbol, boolean isNegated) {
-            this.symbol = symbol;
-            this.isNegated = isNegated;
+    private static List<Proposition> clauseToPropList(Proposition prop){
+        List<Proposition> props = new ArrayList<>();
+        if (prop instanceof Literal || prop instanceof Not && prop.A instanceof Literal){
+            props.add(prop);
+            return props;
         }
 
-        public String toString(){
-            return isNegated ? Dict.NOT+symbol : symbol;
+        props.addAll(clauseToPropList(prop.A));
+        if (prop instanceof Or){
+            props.addAll(clauseToPropList(((Or)prop).B));
         }
+        return props;
     }
 }
