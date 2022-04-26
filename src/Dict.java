@@ -1,6 +1,6 @@
 public class Dict {
     final static String AND = "&";
-    final static String OR = "|"; //TODO find better symbol than v for this. Somehow "|" gives problems with string maipulation
+    final static String OR = "|";
     final static String NOT = "!";
     final static String IMP = "=>";
     final static String BIIMP = "<=>";
