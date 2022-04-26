@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Model{
@@ -6,10 +7,9 @@ public class Model{
     enum value {unknown, T, F}
 
     //Constructor creates model where no value of any symbol is known
-    Model(HashMap<String, SAT.Unit> symbols){
-        for (Map.Entry<String, SAT.Unit> entry :
-                symbols.entrySet()) {
-            this.modelValues.put(entry.getKey(),value.unknown);
+    Model(List<String> symbols){
+        for (String symbol: symbols) {
+            this.modelValues.put(symbol,value.unknown);
         }
     }
 

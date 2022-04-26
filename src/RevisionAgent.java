@@ -39,6 +39,7 @@ public class RevisionAgent {
             } catch (Exception e){
                 System.out.println("Could not revise knowledge base with given proposition.");
                 System.out.println(input);
+                e.printStackTrace();
                 continue;
             }
 
