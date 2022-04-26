@@ -4,7 +4,10 @@ import java.util.List;
 public class CombinatoricsUtil {
 
     /**
-     DISCLAIMER: THIS CODE WAS BORROWED FROM
+     DISCLAIMER:
+     This code was borrowed from
+     https://www.baeldung.com/java-combinations-algorithm
+     on 24/04/2022
      */
     public static List<int[]> generateCombinations_n_choose_r(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
