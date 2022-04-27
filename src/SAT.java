@@ -14,7 +14,7 @@ public class SAT {
         // Get clauses
         clauses = PropUtil.getClausesFromCNF(cnfProp);
 
-        //Create empty model (no values of any symbol is known)
+        // Create empty model (no values of any symbol is known)
         Model model = new Model(symbols);
 
         // Determine satisfiability recursively using DPLL
