@@ -27,9 +27,11 @@ If you want to specify that two propositions should be connected you can use par
 
 Example of the use of parentheses: (A <=> (B & C)) => !C
 
-Once you have written your proposition, simply press your next-line key such as "Enter". 
+Once you have written your proposition, simply press Enter. 
 This will store the proposition in the belief base if it was valid. 
 The terminal will let you know if you made an error such as writing a syntactically incorrect proposition.
+However, we did not spend too much time on this, so the syntax checker is not perfect.
+Try not to write syntactically incorrect stuff on purpose.
 
 When you have entered one or more propositions, you can ask the belief base to print it on CNF form by inputting "cnf".
 This will give you a CNF version of all your propositions individually. 
