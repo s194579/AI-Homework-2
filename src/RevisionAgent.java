@@ -6,7 +6,7 @@ public class RevisionAgent {
 
     public void start(){
         System.out.println("Welcome. Write \"exit\" to stop at any point.");
-        System.out.println("Write \"cnf\" to show the CNF representation of the knowledge base.");
+        System.out.println("Write \"cnf\" to show the CNF representation of the belief base.");
         String input;
         boolean exit = false, showCNF = false;
         while (!exit){
@@ -17,7 +17,7 @@ public class RevisionAgent {
 
             showCNF = input.equalsIgnoreCase("cnf");
             if (showCNF){
-                System.out.println("Knowledge base on CNF form:");
+                System.out.println("Belief base on CNF form:");
                 System.out.println(kb.toCNFString());
                 continue;
             }
@@ -34,16 +34,16 @@ public class RevisionAgent {
             }
 
             try {
-                System.out.println("Revising knowledge base with recieved proposition");
+                System.out.println("Revising belief base with recieved proposition");
                 kb.revise(proposition);
             } catch (Exception e){
-                System.out.println("Could not revise knowledge base with given proposition.");
+                System.out.println("Could not revise belief base with given proposition.");
                 System.out.println(input);
                 e.printStackTrace();
                 continue;
             }
 
-            System.out.println("Updated contents of the knowledge base:");
+            System.out.println("Updated contents of the belief base:");
             System.out.println(kb.toString());
         }
     }
