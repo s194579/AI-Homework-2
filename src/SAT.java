@@ -54,8 +54,9 @@ public class SAT {
 
     private static void applyPureSymbolsSimplification(Model model){
         // Find eventual pure symbols and simplify
-        // If symbol only has positive sign in unresolved clauses then it is pure
-        HashMap<String,Boolean> pureSymbolMap = new HashMap<String, Boolean>();
+        // If symbol has same sign in all unresolved clauses then it is pure
+        HashMap<String,Boolean> positivePureSymbolMap = new HashMap<String, Boolean>();
+        HashMap<String,Boolean> negativePureSymbolMap = new HashMap<String, Boolean>();
         for (Proposition clause: clauses) {
             boolean isResolved = Model.value.T==clause.truthValue(model);
             if (isResolved){ //Ignore clauses that are already resolved
@@ -67,25 +68,41 @@ public class SAT {
                 if (literal instanceof Literal){ //If it is not a Not(Literal)
                     // Check if already found in negated form
                     String symbol = ((Literal) literal).var;
-                    Boolean val = pureSymbolMap.get(symbol);
-                    if (val == null){
-                        pureSymbolMap.put(symbol,true);
+                    Boolean pval = positivePureSymbolMap.get(symbol);
+                    Boolean nval = negativePureSymbolMap.get(symbol);
+                    if (pval == null){
+                        positivePureSymbolMap.put(symbol,true);
+                    }
+                    if (nval == null || true){
+                        negativePureSymbolMap.put(symbol,false);
                     }
                 } else if (literal instanceof Not && literal.A instanceof Literal){
                     String symbol = ((Literal) literal.A).var;
-                    Boolean val = pureSymbolMap.get(symbol);
-                    if (val == null || val == true){
-                        pureSymbolMap.put(symbol,false);
+                    Boolean pval = positivePureSymbolMap.get(symbol);
+                    Boolean nval = negativePureSymbolMap.get(symbol);
+                    if (nval == null){
+                        negativePureSymbolMap.put(symbol,true);
+                    }
+                    if (pval == null || true){
+                        positivePureSymbolMap.put(symbol,false);
                     }
                 }
             }
         }
 
-        // Find the pure symbols and assign value to true
-        for (String symbol: pureSymbolMap.keySet()) {
-            Boolean val = pureSymbolMap.get(symbol);
+        // Find the positive pure symbols and assign value to true
+        for (String symbol: positivePureSymbolMap.keySet()) {
+            Boolean val = positivePureSymbolMap.get(symbol);
             if (val == true){
                 model.modelValues.put(symbol, Model.value.T);
+            }
+        }
+
+        // Find the negative pure symbols and assign value to true
+        for (String symbol: negativePureSymbolMap.keySet()) {
+            Boolean val = negativePureSymbolMap.get(symbol);
+            if (val == true){
+                model.modelValues.put(symbol, Model.value.F);
             }
         }
     }
