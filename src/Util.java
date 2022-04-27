@@ -6,7 +6,7 @@ public class Util {
 
     /**
      DISCLAIMER:
-     This code was borrowed from
+     This method was borrowed from
      https://www.baeldung.com/java-combinations-algorithm
      on 24/04/2022
      */
