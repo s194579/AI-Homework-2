@@ -9,9 +9,10 @@ public class SAT {
     public static boolean isSatisfiableDPLL(Proposition prop){
         // Get symbols
         symbols = PropUtil.getSymbols(prop);
-        Proposition cnfProp = prop.toCNF();
+        Util.removeDuplicates(symbols);
 
         // Get clauses
+        Proposition cnfProp = prop.toCNF();
         clauses = PropUtil.getClausesFromCNF(cnfProp);
 
         // Create empty model (no values of any symbol is known)
@@ -116,11 +117,12 @@ public class SAT {
                 continue;
             }
 
+            int numOfUnknownLiterals = 0;
+            String latestUnkownSymbol = null;
+            Model.value latestUnkownSymbolValue = Model.value.unknown;
+
             List<Proposition> literals = PropUtil.clauseToPropList(clause);
             for (Proposition literal: literals) {
-                int numOfUnknownLiterals = 0;
-                String latestUnkownSymbol = null;
-                Model.value latestUnkownSymbolValue = Model.value.unknown;
                 if (literal instanceof Literal){ //If it is not a Not(Literal)
                     // Check if already found in negated form
                     String symbol = ((Literal) literal).var;
@@ -137,11 +139,10 @@ public class SAT {
                         latestUnkownSymbolValue = Model.value.F;
                     }
                 }
-
-                // If unit clause then assign approriate value
-                if (numOfUnknownLiterals == 1){
-                    model.modelValues.put(latestUnkownSymbol,latestUnkownSymbolValue);
-                }
+            }
+            // If unit clause then assign approriate value
+            if (numOfUnknownLiterals == 1){
+                model.modelValues.put(latestUnkownSymbol,latestUnkownSymbolValue);
             }
         }
     }

@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class Util {
 
@@ -59,5 +57,12 @@ public class Util {
         //Remove marked elements
         while (list.remove(null)) {
         }
+    }
+
+    public static void removeDuplicates(List<String> list){
+        Set<String> set = new LinkedHashSet<>();
+        set.addAll(list);
+        list.clear();
+        list.addAll(set);
     }
 }
