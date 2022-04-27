@@ -1,16 +1,20 @@
 public class StringConverter {
     private static String operatorString;
-    public static Proposition toProposition(String prop){
+    private static boolean propIsEmptiy;
+    public static Proposition toProposition(String prop) {
         //Strip of whitespace
         prop = prop.replaceAll("\\s", "");
-
+        propIsEmptiy = false;
         //Perform conversion
         Proposition proposition = toPropositionInner(prop);
 
         //Set parents in whole tree
         proposition.setParents(null);
-
-        return proposition;
+        if (propIsEmptiy) {
+            return null;
+        } else {
+            return proposition;
+        }
     }
 
 
@@ -155,6 +159,9 @@ public class StringConverter {
             return new Not(null,p1);
         } else {
             //Must be literal only
+            if(prop.replace(" ","").length() <1 ){
+                propIsEmptiy = true;
+            }
             Literal l = new Literal(null,prop);
             return l;
         }
