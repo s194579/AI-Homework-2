@@ -5,13 +5,13 @@ public class BeliefBase {
 
     private List<Proposition> KBlist = new ArrayList<Proposition>();
 
-    public void revise(Proposition phi){
+    public void revise(Proposition phi) throws Exception {
         // This method takes a new proposition and does revision on the existing knowledge base
         contraction(new Not(null,phi));
         KBlist.add(phi);
     }
 
-    public void contraction(Proposition phi){
+    public void contraction(Proposition phi) throws Exception {
         // This method takes a new proposition and does contraction on the existing knowledge base
 
         //Check if current beliefs entail the given information (If they don't, we can ignore)
@@ -20,6 +20,10 @@ public class BeliefBase {
         }
 
         int[] indices = getIndicesOfPropsToDelete(phi);
+
+        if (indices == null){
+            throw new Exception("Trying to contract a tautology from the belief base. This is not allowed");
+        }
 
         Util.removeElementsFromList(KBlist, indices);
 
@@ -33,6 +37,8 @@ public class BeliefBase {
                 return indices;
             }
         }
+        //If null is returned, no combination of indices to deleted can satisfy the belief base
+        // ==> We must be contracting a tautology, which is not allowed
         return null;
     }
 
